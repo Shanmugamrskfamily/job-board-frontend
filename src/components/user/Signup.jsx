@@ -84,12 +84,12 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <form className="max-w-md w-full bg-white p-6 rounded-lg shadow-md" onSubmit={formik.handleSubmit}>
+      <form className="max-w-md w-full  p-6 rounded-lg shadow-md border-white border-2" onSubmit={formik.handleSubmit}>
         <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
 
         {/* Username */}
         <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="username" className="block text-sm font-medium">
             Username:
           </label>
           <input
@@ -108,7 +108,7 @@ const SignUp = () => {
 
         {/* Email */}
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="email" className="block text-sm font-medium">
             Email:
           </label>
           <input
@@ -127,7 +127,7 @@ const SignUp = () => {
 
         {/* Password */}
         <div className="mb-4 relative">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="password" className="block text-sm font-medium">
             Password:
           </label>
           <input
@@ -153,7 +153,7 @@ const SignUp = () => {
 
         {/* Role */}
         <div className="mb-4">
-          <label htmlFor="role" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="role" className="block text-sm font-medium">
             Role:
           </label>
           <select
@@ -174,7 +174,7 @@ const SignUp = () => {
 
         {/* Profile Picture */}
         <div className="mb-4">
-          <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="profilePicture" className="block text-sm font-medium">
             Profile Picture:
           </label>
           <input
@@ -194,7 +194,7 @@ const SignUp = () => {
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm">
           Already have an account?{' '}
           <Link to="/login" className="text-blue-500 hover:underline">
             Log in here

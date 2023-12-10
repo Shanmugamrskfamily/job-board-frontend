@@ -14,6 +14,7 @@ const ForgotPasswordLink = () => {
       try {
         await axios.get(`http://localhost:5000/api/auth/reset-password-verify/${token}`);
         setLoading(false);
+        toast.success('Token verified successfully! You can now reset your password')
         navigate(`/reset-password/${token}`);
       } catch (error) {
         console.error('Error verifying reset password link:', error.message);

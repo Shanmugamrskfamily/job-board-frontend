@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const Login = () => {
     password: '',
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -18,6 +20,10 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e) => {
@@ -50,12 +56,12 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <form className="max-w-md w-full bg-white p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
+      <form className="max-w-md w-full border-white border-2 p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl font-bold mb-4">Login</h2>
 
         {/* Identifier (Email or Username) */}
         <div className="mb-4">
-          <label htmlFor="identifier" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="identifier" className="block text-sm font-medium">
             Email or Username:
           </label>
           <input
@@ -71,18 +77,27 @@ const Login = () => {
 
         {/* Password */}
         <div className="mb-4 relative">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="password" className="block text-sm font-medium">
             Password:
           </label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-            required
-          />
+          <div className="flex items-center">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              id="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
+              required
+            />
+            <button
+              type="button"
+              onClick={handleTogglePassword}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
         </div>
 
         <button
@@ -99,13 +114,13 @@ const Login = () => {
             'Login'
           )}
         </button>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm">
           Forgot Your Password?{' '}
           <a href="/forgot-password" className="text-blue-500 hover:underline">
             Reset Password here
           </a>
-          </p>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        </p>
+        <p className="mt-4 text-center text-sm">
           Don't have an account?{' '}
           <a href="/signup" className="text-blue-500 hover:underline">
             Sign up here

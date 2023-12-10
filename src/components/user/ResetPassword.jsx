@@ -45,11 +45,11 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <form className="max-w-md w-full bg-white p-6 rounded-lg shadow-md" onSubmit={formik.handleSubmit}>
+      <form className="max-w-md w-full border-white border-2 p-6 rounded-lg shadow-md" onSubmit={formik.handleSubmit}>
         <h2 className="text-2xl font-bold mb-4">Reset Password</h2>
 
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+          <label htmlFor="password" className="block text-sm font-medium ">
             New Password:
           </label>
           <input
