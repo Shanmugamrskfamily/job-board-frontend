@@ -99,7 +99,12 @@ const Login = () => {
             'Login'
           )}
         </button>
-
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Forgot Your Password?{' '}
+          <a href="/forgot-password" className="text-blue-500 hover:underline">
+            Reset Password here
+          </a>
+          </p>
         <p className="mt-4 text-center text-sm text-gray-600">
           Don't have an account?{' '}
           <a href="/signup" className="text-blue-500 hover:underline">
