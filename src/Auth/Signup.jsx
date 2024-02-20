@@ -1,107 +1,219 @@
-import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import { ImageUpload } from './ImageUpload';
+import React, { useState } from "react";
+import axios from "axios";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { ClipLoader } from "react-spinners";
 
-const Signup = () => {
-  const initialValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: '',
-    profilePicture: '',
-  };
+const SignUp = () => {
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [profilePictureUrl, setProfilePictureUrl] = useState([]);
 
-  const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required('First Name is required'),
-    lastName: Yup.string().required('Last Name is required'),
-    email: Yup.string().email('Invalid email address').required('Email is required'),
-    password: Yup.string()
-      .required('Password is required')
-      .min(6, 'Password must be at least 6 characters')
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d@$!%*#?&]{6,}$/,
-        'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
-      ),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'Passwords must match')
-      .required('Confirm Password is required'),
-    role: Yup.string().required('Role is required'),
-    profilePicture: Yup.string().required('Profile Picture is required'),
-  });
-
-  const handleSubmit = async (values, { setSubmitting }) => {
+  const handleSubmit = async (values) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signup', values);
-      console.log('Signup successful:', response.data);
-      // Optionally, you can redirect the user to another page or show a success message
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("file", profilePictureUrl);
+      console.log('Value: ', values);
+      formData.append("upload_preset", "txgf9z4m");
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/da5lphikg/image/upload",
+        formData
+      );
+      console.log('response: ', response);
+    //    setProfilePictureUrl(response.data.secure_url);
+
+      const userData = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        role:values.role,
+        profilePictureUrl: response.data.secure_url,
+      };
+      console.log('User Data: ',userData);
+
+      await axios.post("http://localhost:5000/api/auth/signup", userData);
+
+      // Reset form and loading state
+      setLoading(false);
+      setErrorMessage("");
+      alert("Sign up successful!");
     } catch (error) {
-      console.error('Error signing up:', error);
-      // Handle error, e.g., display error message to the user
-    } finally {
-      setSubmitting(false);
+      setLoading(false);
+      setErrorMessage(error.response.data.message);
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen">
-        <div className="max-w-xs">
-      <img src="path_to_your_image" alt="Signup" className="h-auto max-h-screen" />
-    </div>
-    <div className="max-w-lg w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-      <h2 className="text-xl font-semibold mb-4">Signup</h2>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-        {({ isSubmitting }) => (
-          <Form>
-            <div className="grid grid-cols-2 gap-x-4">
-              <div>
-                <label htmlFor="firstName">First Name</label>
-                <Field type="text" name="firstName" className="form-input" />
-                <ErrorMessage name="firstName" component="div" className="text-red-500 mt-1" />
-              </div>
-              <div>
-                <label htmlFor="lastName">Last Name</label>
-                <Field type="text" name="lastName" className="form-input" />
-                <ErrorMessage name="lastName" component="div" className="text-red-500 mt-1" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <label htmlFor="email">Email</label>
-              <Field type="email" name="email" className="form-input" />
-              <ErrorMessage name="email" component="div" className="text-red-500 mt-1" />
-            </div>
-            <div className="mt-4">
-              <label htmlFor="password">Password</label>
-              <Field type="password" name="password" className="form-input" />
-              <ErrorMessage name="password" component="div" className="text-red-500 mt-1" />
-            </div>
-            <div className="mt-4">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <Field type="password" name="confirmPassword" className="form-input" />
-              <ErrorMessage name="confirmPassword" component="div" className="text-red-500 mt-1" />
-            </div>
-            <div className="mt-4">
+      <div className="flex flex-col md:flex-row">
+        <div className="max-w-md md:mr-8">
+          {/* Left side signup image */}
+          <img
+            src="/signup_image.jpg"
+            alt="Signup"
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="max-w-md md:ml-8">
+          {/* Right side signup form */}
+          <h2 className="text-3xl font-bold mb-4">Sign Up</h2>
+          <Formik
+            initialValues={{
+              firstName: "",
+              lastName: "",
+              email: "",
+              password: "",
+              role:"",
+              confirmPassword: "",
+              profilePictureUrl:"",
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.firstName) {
+                errors.firstName = "Required";
+              }
+              if (!values.lastName) {
+                errors.lastName = "Required";
+              }
+              if (!values.email) {
+                errors.email = "Required";
+              } else if (
+                !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+              ) {
+                errors.email = "Invalid email address";
+              }
+              if (!values.password) {
+                errors.password = "Required";
+              } else if (
+                !/(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).{6,}/.test(
+                  values.password
+                )
+              ) {
+                errors.password =
+                  "Password must contain at least 6 characters, 1 uppercase letter, 1 number, and 1 special character";
+              }
+              if (!values.confirmPassword) {
+                errors.confirmPassword = "Required";
+              } else if (values.password !== values.confirmPassword) {
+                errors.confirmPassword = "Passwords must match";
+              }
+              if(!values.role){errors.role = "Required";}
+            //   if (!values.profilePicture) {
+            //     errors.profilePicture = "Required";
+            //   }
+              return errors;
+            }}
+            onSubmit={handleSubmit}
+          >
+            {(
+              <Form className="space-y-4">
+                <div>
+                  <Field
+                    type="text"
+                    name="firstName"
+                    placeholder="First Name"
+                    className="w-full p-2 rounded border"
+                  />
+                  <ErrorMessage
+                    name="firstName"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                <div>
+                  <Field
+                    type="text"
+                    name="lastName"
+                    placeholder="Last Name"
+                    className="w-full p-2 rounded border"
+                  />
+                  <ErrorMessage
+                    name="lastName"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                <div>
+                  <Field
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    className="w-full p-2 rounded border"
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                <div>
+                  <Field
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    className="w-full p-2 rounded border"
+                  />
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                <div>
+                  <Field
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    className="w-full p-2 rounded border"
+                  />
+                  <ErrorMessage
+                    name="confirmPassword"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                <div className="mt-4">
               <label htmlFor="role">Role</label>
-              <Field as="select" name="role" className="form-select">
+              <Field as="select" name="role" className="form-select ml-2">
                 <option value="">Select Role</option>
                 <option value="jobSeeker">Job Seeker</option>
                 <option value="recruiter">Recruiter</option>
               </Field>
-              <ErrorMessage name="role" component="div" className="text-red-500 mt-1" />
+              <ErrorMessage
+                    name="role"
+                    component="div"
+                    className="text-red-500"/>
             </div>
-            <ImageUpload name="profilePicture" />
-            <button type="submit" disabled={isSubmitting} className="btn btn-primary mt-4">
-              {isSubmitting ? 'Signing up...' : 'Sign Up'}
-            </button>
-          </Form>
-        )}
-      </Formik>
+            <div>
+            <label htmlFor="role">Profile Picture(Optional)</label>
+                <input type="file" onChange={(e) =>setProfilePictureUrl(e.target.files[0])} className="w-full"/>
+                <ErrorMessage
+                    name="profilePicture"
+                    component="div"
+                    className="text-red-500"/>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white py-2 rounded"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ClipLoader size={20} color={"#ffffff"} loading={true} />
+                  ) : (
+                    "Sign Up"
+                  )}
+                </button>
+              </Form>
+            )}
+          </Formik>
+          {errorMessage && (
+            <div className="text-red-500 mt-2">{errorMessage}</div>
+          )}
+        </div>
+      </div>
     </div>
-  </div>
   );
 };
 
-export default Signup;
+export default SignUp;
