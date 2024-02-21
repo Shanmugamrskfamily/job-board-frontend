@@ -204,10 +204,6 @@ const SignUp = () => {
             <label htmlFor="role" className="mr-3" >Profile Picture(Optional)</label>
                 <input type="file" accept="image/*" onChange={(e) =>setProfilePictureUrl(e.target.files[0])} className="w-full mt-2"/>
                 </div>
-                <ErrorMessage
-                    name="profilePicture"
-                    component="div"
-                    className="text-red-500"/>
                 </div>
                 <button
                   type="submit"
